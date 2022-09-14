@@ -38,7 +38,7 @@ class Tool():
         lineNumber = 1
         for line in stream:
             if self.lineNumberFlag:
-                print(str(lineNumber).rjust(6," "), end= "  ")
+                print(str(lineNumber).rjust(6, " "), end = "  ")
             print(line, end = "")
             lineNumber += 1
         stream.close()

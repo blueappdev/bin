@@ -20,7 +20,7 @@ class MessageDialog(simpledialog.Dialog):
     def  __init__(self, parent, title = "titleString", text="messageString"):
         self.titleString = title
         self.messageString = text
-        tkSimpleDialog.Dialog.__init__(self,parent)
+        simpledialog.Dialog.__init__(self,parent)
 
     def buttonbox(self):
         box = tkinter.Frame(self)
@@ -43,7 +43,8 @@ class MessageDialog(simpledialog.Dialog):
 class FindDialog(simpledialog.Dialog):
     def __init__(self,parent,defaultFindString = ""):
         self.defaultFindString = defaultFindString
-        tkSimpleDialog.Dialog.__init__(self,parent)
+        simpledialog.Dialog.__init__(self,parent)
+        
     def body(self,master):
         self.title("Find")
         self.findString = None
@@ -581,9 +582,9 @@ class DiffTool(tkinter.Frame):
 
     def findAction(self):
         if self.findIgnoreCase:
-            actualFindString=string.upper(self.findString)
+            actualFindString = self.findString.upper()
         else:
-            actualFindString=self.findString
+            actualFindString = self.findString
 
         # take current start position for find/search from
         #     - current selection
@@ -620,12 +621,12 @@ class DiffTool(tkinter.Frame):
             findData = self.findTextWidget.get("1.0",newFindIndexi)
 
         if self.findIgnoreCase:
-            findData=string.upper(findData)
+            findData = findData.upper()
 
         if self.findDirection == 1:
-            distance = string.find(findData,actualFindString)
+            distance = findData.find(actualFindString)
         else:
-            distance = string.rfind(findData,actualFindString)
+            distance = findData.rfind(actualFindString)
           
         if distance >= 0:
             if self.findDirection == 1:
