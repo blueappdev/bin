@@ -926,71 +926,71 @@ if __name__ == "__main__":
 
        tool.diffRecords.reverse()
 
-       # first traversal, (do not modify the tool.diffRecords)
+       # First traversal. Do not modify tool.diffRecords.
        for t, a1, a2, b1, b2 in tool.diffRecords:
            if t == "a":
-               # something that only exists on the right side
+               # Something that only exists on the right side.
                assert(a1 == a2)
                assert(b1 <= b2)
                i=b1
                while i<=b2:
                    rightData[i-1][1]="red" 
-                   i=i+1
+                   i += 1
 
-           if t=="d":
-               # something that only exists on the left side
-               assert(b1==b2)
-               assert(a1<=a2)
+           if t == "d":
+               # Something that only exists on the left side.
+               assert(b1 == b2)
+               assert(a1 <= a2)
                i=a1
-               while i<=a2:
+               while i <= a2:
                    leftData[i-1][1]="green"
-                   i=i+1
+                   i += 1
 
-           if t=="c":
-               # something that exists on both side
-               assert(a1<=a2)
-               assert(b1<=b2)
+           if t == "c":
+               # Something that exists on both side.
+               assert(a1 <= a2)
+               assert(b1 <= b2)
                i=a1
-               while i<=a2:
-                   leftData[i-1][1]="blue"
-                   i=i+1
-               i=b1
-               while i<=b2:
-                   rightData[i-1][1]="blue"
-                   i=i+1
+               while i <= a2:
+                   leftData[i-1][1] = "blue"
+                   i += 1
+               i = b1
+               while i <= b2:
+                   rightData[i - 1][1]="blue"
+                   i += 1
 
-       for t,a1,a2,b1,b2 in tool.diffRecords:
+       for t, a1, a2, b1, b2 in tool.diffRecords:
            #print t,a1,a2,b1,b2
-           if t=="a":
-                # something that only exists on the right side
+           if t == "a":
+                # Something that only exists on the right side.
                 assert(a1==a2)
                 assert(b1<=b2)
                 i=b1
                 while i<=b2:
                     leftData.insert(a1,["\n","red"])
                     i=i+1
-           if t=="d":
-                # something that only exists on the left side
+           if t == "d":
+                # Something that only exists on the left side.
                 assert(b1==b2)
                 assert(a1<=a2)
                 i=a1
                 while i<=a2:
                     rightData.insert(b1,["\n","green"])
                     i=i+1
-           if t=="c":
-                # something that changed between the two sides
-                assert(a1<=a2)
-                assert(b1<=b2)
+           if t == "c":
+                # Something that changed between the two sides.
+                assert(a1 <= a2)
+                assert(b1 <= b2)
                 if a2-a1 < b2-b1:
-                    i=b1+a2-a1
-                    while i<b2:
-                        leftData.insert(a2,["\n","blue"])
-                        i=i+1
-                elif a2-a1 > b2-b1:
-                    i=a1+b2-b1
-                    while i<a2:
-                        rightData.insert(b2,["\n","blue"])
-                        i=i+1
+                    i = b1 + a2 - a1
+                    while i < b2:
+                        leftData.insert(a2, ["\n", "blue"])
+                        i = i + 1
+                elif a2 - a1 > b2 - b1:
+                    i = a1 + b2 - b1
+                    while i < a2:
+                        rightData.insert(b2, ["\n", "blue"])
+                        i = i + 1
 
        tool.diffRecords.reverse()   # for canvasChanged in ascending order
 
@@ -998,26 +998,26 @@ if __name__ == "__main__":
        oldTag=None
        a=None
        b=None
-       for x,t in leftData+[("Dummy",None)]:
+       for x, t in leftData + [("Dummy",None)]:
            if t != oldTag:
                if a is not None:
-                   b=lineNumber
+                   b = lineNumber
                    tool.navigationList.append((a,b,oldTag))
                if t is None:
-                   a=None
+                   a = None
                else:
-                   a=lineNumber
-           oldTag=t
-           lineNumber=lineNumber+1
+                   a = lineNumber
+           oldTag = t
+           lineNumber += 1
 
-       tool.totalLines=lineNumber-2 
+       tool.totalLines = lineNumber - 2 
 
-       tool.linesLabel.config(text="Total lines: %d" % tool.totalLines)
+       tool.linesLabel.config(text = "Total lines: %d" % tool.totalLines)
 
-       tool.leftText.tag_config("red",background="pink")
-       tool.leftText.tag_config("green",background="lightgreen")
-       tool.leftText.tag_config("blue",background="lightblue")
-       tool.leftText.tag_config("highlight",background="black",foreground="white")
+       tool.leftText.tag_config("red", background="pink")
+       tool.leftText.tag_config("green", background="lightgreen")
+       tool.leftText.tag_config("blue", background="lightblue")
+       tool.leftText.tag_config("highlight", background="black",foreground="white")
        # diffchar tag must be created after highlight tag in order to have priority
        # (still be visible when highlighted)
        tool.leftText.tag_config("bluediffchar",
