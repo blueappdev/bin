@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 #
-# xdiff.py
-#
-# requires python 2.7
+# xdiff.py (python3 version)
 #
 
 import os
@@ -10,89 +8,89 @@ import sys
 import string
 import getopt
 import time
-import Tkinter
-import tkSimpleDialog
-import tkMessageBox
+import tkinter
+from tkinter import simpledialog
+from tkinter import messagebox
 
 def matchLongOption(arg,opt):
-    x=string.find(opt,"/")
-    return len(arg) >= x and (opt[:x]+opt[x+1:])[:len(arg)]==arg
+    x=string.find(opt, "/")
+    return len(arg) >= x and (opt[:x] + opt[x + 1:])[:len(arg)] == arg
 
-class MessageDialog(tkSimpleDialog.Dialog):
+class MessageDialog(simpledialog.Dialog):
     def  __init__(self, parent, title = "titleString", text="messageString"):
         self.titleString = title
         self.messageString = text
         tkSimpleDialog.Dialog.__init__(self,parent)
 
     def buttonbox(self):
-        box = Tkinter.Frame(self)
-        self.button = Tkinter.Button(box, 
+        box = tkinter.Frame(self)
+        self.button = tkinter.Button(box, 
                 text = "OK", width = 10, 
-                command = self.ok, default = Tkinter.ACTIVE)
-        self.button.pack(side = Tkinter.LEFT, padx = 5, pady = 5)
+                command = self.ok, default = tkinter.ACTIVE)
+        self.button.pack(side = tkinter.LEFT, padx = 5, pady = 5)
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.ok)
         box.pack()
 
     def body(self,master):
         self.title(self.titleString)
-        #self.messageLabel = Tkinter.Label(master, width = 16, text = self.messageString)
-        self.messageLabel = Tkinter.Label(master, text = self.messageString)
-        #self.messageLabel.grid(row = 0, column = 1, stick = Tkinter.W)
+        #self.messageLabel = tkinter.Label(master, width = 16, text = self.messageString)
+        self.messageLabel = tkinter.Label(master, text = self.messageString)
+        #self.messageLabel.grid(row = 0, column = 1, stick = tkinter.W)
         self.messageLabel.grid()
         return None # self.button # for focus_set
 
-class FindDialog(tkSimpleDialog.Dialog):
+class FindDialog(simpledialog.Dialog):
     def __init__(self,parent,defaultFindString = ""):
         self.defaultFindString = defaultFindString
         tkSimpleDialog.Dialog.__init__(self,parent)
     def body(self,master):
         self.title("Find")
         self.findString = None
-        self.findStringVar = Tkinter.StringVar()
+        self.findStringVar = tkinter.StringVar()
         if self.defaultFindString is None: 
             self.findStringVar.set("")
         else:
             self.findStringVar.set(self.defaultFindString)
-        Tkinter.Label(master,text="Find:").grid(
+        tkinter.Label(master,text="Find:").grid(
             row = 0,column = 0,
-            stick = Tkinter.W)
-        self.entry = Tkinter.Entry(master,textvariable = self.findStringVar,
+            stick = tkinter.W)
+        self.entry = tkinter.Entry(master,textvariable = self.findStringVar,
             background = "white")
         self.entry.grid(row = 0,column = 1,
-            columnspan = 4, stick = Tkinter.EW)
-        self.entry.selection_range(0,Tkinter.END)
-        self.entry.icursor(Tkinter.END)
-        self.findInWhatWindow = Tkinter.StringVar()
+            columnspan = 4, stick = tkinter.EW)
+        self.entry.selection_range(0,tkinter.END)
+        self.entry.icursor(tkinter.END)
+        self.findInWhatWindow = tkinter.StringVar()
         self.findInWhatWindow.set("left")
-        self.findDirection = Tkinter.IntVar()
+        self.findDirection = tkinter.IntVar()
         self.findDirection.set(1)
-        self.findIgnoreCase = Tkinter.IntVar()
+        self.findIgnoreCase = tkinter.IntVar()
         self.findIgnoreCase.set(1)
-        rb = Tkinter.Radiobutton(master,
+        rb = tkinter.Radiobutton(master,
                 text = "Forward",
                 variable = self.findDirection,
                 value = 1)
-        rb.grid(row = 1, column = 1, stick = Tkinter.W)
-        rb = Tkinter.Radiobutton(master,
+        rb.grid(row = 1, column = 1, stick = tkinter.W)
+        rb = tkinter.Radiobutton(master,
                 text = "Backward",
                 variable = self.findDirection,
                 value = -1)
-        rb.grid(row = 2, column = 1, stick = Tkinter.W)
-        rb = Tkinter.Checkbutton(master,
+        rb.grid(row = 2, column = 1, stick = tkinter.W)
+        rb = tkinter.Checkbutton(master,
                 text = "Ignore Case",
                 variable = self.findIgnoreCase)
-        rb.grid(row = 1,column = 2, stick = Tkinter.W)
-        rb = Tkinter.Radiobutton(master,
+        rb.grid(row = 1,column = 2, stick = tkinter.W)
+        rb = tkinter.Radiobutton(master,
                 text = "Left Window",
                 variable = self.findInWhatWindow,
                 value = "left")
-        rb.grid(row = 1, column = 3, stick = Tkinter.W)
-        rb=Tkinter.Radiobutton(master,
+        rb.grid(row = 1, column = 3, stick = tkinter.W)
+        rb=tkinter.Radiobutton(master,
                 text="Right Window",
                 variable=self.findInWhatWindow,
                 value="right")
-        rb.grid(row=2,column=3,stick=Tkinter.W)
+        rb.grid(row=2,column=3,stick=tkinter.W)
         return self.entry #for focus_set
 
     def apply(self):
@@ -175,7 +173,7 @@ def onelinediff1(leftLine,rightLine):
     return (x,y,x,y)
 
 
-class DiffTool(Tkinter.Frame):
+class DiffTool(tkinter.Frame):
     def __init__(self,master):
         self.createPopupMenus()
         self.horizontalScrollbarUpdateInfo=10
@@ -183,7 +181,7 @@ class DiffTool(Tkinter.Frame):
         self.findString=None
         self.navigationList=[]
         self.navigationIndex=None
-        Tkinter.Frame.__init__(self,master=master)
+        tkinter.Frame.__init__(self,master=master)
         self.master.protocol("WM_DELETE_WINDOW",self.onFileExit)
 
         # Send explicitly the unpost context menu, 
@@ -197,32 +195,32 @@ class DiffTool(Tkinter.Frame):
         self.createToolbar()
         self.createStatusLine()
 
-        self.mainFrame=Tkinter.Frame(self.master,width=1200,height=720)
+        self.mainFrame=tkinter.Frame(self.master,width=1200,height=720)
         self.master.bind("<Control-f>", self.onViewFind)
         self.master.bind("<F3>", self.onViewFindAgain)
 
         #
         # Left Frame
         #
-        self.leftFrame = Tkinter.Frame(self.mainFrame)
-        self.leftLabel = Tkinter.Entry(self.leftFrame, bd=1, relief=Tkinter.SUNKEN)
-        self.leftLabel.pack(side=Tkinter.TOP,fill=Tkinter.X)
-        self.leftVerticalScrollbar=Tkinter.Scrollbar(self.leftFrame, 
-                orient = Tkinter.VERTICAL)
-        self.leftHorizontalScrollbar=Tkinter.Scrollbar(self.leftFrame, 
-                orient = Tkinter.HORIZONTAL)
-        self.leftText = Tkinter.Text(self.leftFrame,
+        self.leftFrame = tkinter.Frame(self.mainFrame)
+        self.leftLabel = tkinter.Entry(self.leftFrame, bd=1, relief=tkinter.SUNKEN)
+        self.leftLabel.pack(side=tkinter.TOP,fill=tkinter.X)
+        self.leftVerticalScrollbar=tkinter.Scrollbar(self.leftFrame, 
+                orient = tkinter.VERTICAL)
+        self.leftHorizontalScrollbar=tkinter.Scrollbar(self.leftFrame, 
+                orient = tkinter.HORIZONTAL)
+        self.leftText = tkinter.Text(self.leftFrame,
                 bg="white",
                 xscrollcommand=self.leftxset,
                 yscrollcommand=self.leftyset)
         if os.name == "nt":
             self.leftText.config(font=("Courier",8))
-        self.leftText.config(wrap=Tkinter.NONE)
-        self.leftVerticalScrollbar.pack(side=Tkinter.RIGHT,fill=Tkinter.Y)
-        self.leftHorizontalScrollbar.pack(side=Tkinter.BOTTOM,fill=Tkinter.X)
-        self.leftText.pack(fill=Tkinter.BOTH,expand=1)
-        #self.leftFrame.pack(side=Tkinter.LEFT,fill=Tkinter.BOTH,expand=1)
-        #self.leftFrame.grid(row=0,column=0,stick=Tkinter.NSEW,expand=1)
+        self.leftText.config(wrap=tkinter.NONE)
+        self.leftVerticalScrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+        self.leftHorizontalScrollbar.pack(side=tkinter.BOTTOM,fill=tkinter.X)
+        self.leftText.pack(fill=tkinter.BOTH,expand=1)
+        #self.leftFrame.pack(side=tkinter.LEFT,fill=tkinter.BOTH,expand=1)
+        #self.leftFrame.grid(row=0,column=0,stick=tkinter.NSEW,expand=1)
         self.leftFrame.place(relwidth=0.5,width=-7,relheight=1)
 
         self.leftText.bind("<Key>", self.filterKey)
@@ -233,25 +231,25 @@ class DiffTool(Tkinter.Frame):
         #
         # Right Frame
         #
-        self.rightFrame = Tkinter.Frame(self.mainFrame)
-        self.rightLabel = Tkinter.Entry(self.rightFrame, bd = 1, relief = Tkinter.SUNKEN)
-        self.rightLabel.pack(side = Tkinter.TOP, fill = Tkinter.X)
-        self.rightVerticalScrollbar = Tkinter.Scrollbar(self.rightFrame, 
-                orient = Tkinter.VERTICAL)
-        self.rightHorizontalScrollbar = Tkinter.Scrollbar(self.rightFrame, 
-                orient = Tkinter.HORIZONTAL)
-        self.rightText = Tkinter.Text(self.rightFrame,
+        self.rightFrame = tkinter.Frame(self.mainFrame)
+        self.rightLabel = tkinter.Entry(self.rightFrame, bd = 1, relief = tkinter.SUNKEN)
+        self.rightLabel.pack(side = tkinter.TOP, fill = tkinter.X)
+        self.rightVerticalScrollbar = tkinter.Scrollbar(self.rightFrame, 
+                orient = tkinter.VERTICAL)
+        self.rightHorizontalScrollbar = tkinter.Scrollbar(self.rightFrame, 
+                orient = tkinter.HORIZONTAL)
+        self.rightText = tkinter.Text(self.rightFrame,
                 bg="white",
                 xscrollcommand = self.rightxset,
                 yscrollcommand = self.rightyset)
         if os.name == "nt":
             self.rightText.config(font=("Courier",8))
-        self.rightText.config(wrap=Tkinter.NONE)
-        self.rightVerticalScrollbar.pack(side=Tkinter.RIGHT,fill=Tkinter.Y)
-        self.rightHorizontalScrollbar.pack(side=Tkinter.BOTTOM,fill=Tkinter.X)
-        self.rightText.pack(fill=Tkinter.BOTH,expand=1)
-        #self.rightFrame.pack(side=Tkinter.LEFT,fill=Tkinter.BOTH,expand=1)
-        #self.rightFrame.grid(row=0,column=1,stick=Tkinter.NSEW,expand=1)
+        self.rightText.config(wrap=tkinter.NONE)
+        self.rightVerticalScrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+        self.rightHorizontalScrollbar.pack(side=tkinter.BOTTOM,fill=tkinter.X)
+        self.rightText.pack(fill=tkinter.BOTH,expand=1)
+        #self.rightFrame.pack(side=tkinter.LEFT,fill=tkinter.BOTH,expand=1)
+        #self.rightFrame.grid(row=0,column=1,stick=tkinter.NSEW,expand=1)
         self.rightFrame.place(relx=0.5,x=-7,width=-7,relwidth=0.5,relheight=1)
 
         self.rightText.bind("<Key>", self.filterKey)
@@ -265,35 +263,35 @@ class DiffTool(Tkinter.Frame):
         self.rightVerticalScrollbar.config(command=self.yview)
         self.rightHorizontalScrollbar.config(command=self.xview)
 
-        self.canvas=Tkinter.Canvas(self.mainFrame,background="white")
+        self.canvas=tkinter.Canvas(self.mainFrame,background="white")
         self.canvas.place(relx=1,x=-14,width=14,relheight=1,height=-52,y=35)
         self.canvas.place(relx=1,x=-14,width=14,relheight=1,height=-52,y=35)
         self.canvas.bind("<Configure>", self.canvasChanged)
         
         #
-        self.mainFrame.pack(fill=Tkinter.BOTH,expand=1)
+        self.mainFrame.pack(fill=tkinter.BOTH,expand=1)
 
     def canvasChanged(self,event):
         # canvas size changed, re-paint all rectangles
-        self.canvas.delete(Tkinter.ALL)
+        self.canvas.delete(tkinter.ALL)
         a = 0  # cumulatation of lines
         b = 0 
         leftdelta=0
         rightdelta=0
         for t,lefta,leftb,righta,rightb in self.diffRecords:
-            assert(self.leftText.index(Tkinter.END) == self.rightText.index(Tkinter.END))
-            x,y=map(int,string.split(self.leftText.index(Tkinter.END),"."))
-            a=max(lefta+leftdelta,righta+rightdelta)
-            b=a+max(leftb-lefta,rightb-righta)+1
+            assert(self.leftText.index(tkinter.END) == self.rightText.index(tkinter.END))
+            x, y = map(int, self.leftText.index(tkinter.END).split("."))
+            a = max(lefta + leftdelta, righta + rightdelta)
+            b = a + max(leftb - lefta, rightb - righta) + 1
             #print t,lefta,"(",lefta+leftdelta,")",leftb,righta,"(",righta+rightdelta,")",rightb,a,b
             if t=="a":
-                self.canvas.create_rectangle(0,(a-1)*event.height/x,14,(b-1)*event.height/x,fill="red",outline="red")
+                self.canvas.create_rectangle(0,(a - 1) * event.height/x,14,(b - 1)*event.height/x,fill="red",outline="red")
                 leftdelta=leftdelta + rightb - righta + 1
             if t=="d":
-                self.canvas.create_rectangle(0,(a-1)*event.height/x,14,(b-1)*event.height/x,fill="green",outline="green")
+                self.canvas.create_rectangle(0,(a-1)*event.height/x,14,(b - 1) * event.height/x,fill="green",outline="green")
                 rightdelta=rightdelta + leftb - lefta + 1
             if t=="c":
-                self.canvas.create_rectangle(0,(a-1)*event.height/x,14,(b-1)*event.height/x,fill="blue",outline="blue")
+                self.canvas.create_rectangle(0,(a-1)*event.height/x,14,(b - 1) * event.height/x,fill="blue",outline="blue")
                 d=(leftb - lefta) - (rightb - righta)
                 if d<0:
                     leftdelta=leftdelta + abs(d) + 1
@@ -376,37 +374,37 @@ class DiffTool(Tkinter.Frame):
         self.verticalScrollbarUpdateInfo=10
 
     def createStatusLine(self):
-        self.statusFrame=Tkinter.Frame(self.master)
-        self.statusLabel = Tkinter.Label(
+        self.statusFrame=tkinter.Frame(self.master)
+        self.statusLabel = tkinter.Label(
                 self.statusFrame,
                 text="status",
                 bd=1,
-                relief=Tkinter.SUNKEN,
-                anchor=Tkinter.W)
-        self.statusLabel.pack(side=Tkinter.LEFT,fill=Tkinter.X,expand=1)
-        self.linesLabel = Tkinter.Label(
+                relief=tkinter.SUNKEN,
+                anchor=tkinter.W)
+        self.statusLabel.pack(side=tkinter.LEFT,fill=tkinter.X,expand=1)
+        self.linesLabel = tkinter.Label(
                 self.statusFrame,
                 text="lines",
                 bd=1,
-                relief=Tkinter.SUNKEN,
-                anchor=Tkinter.W)
-        self.linesLabel.pack(side=Tkinter.RIGHT,fill=Tkinter.X,expand=1)
-        self.statusFrame.pack(side=Tkinter.BOTTOM,fill=Tkinter.X)
+                relief=tkinter.SUNKEN,
+                anchor=tkinter.W)
+        self.linesLabel.pack(side=tkinter.RIGHT,fill=tkinter.X,expand=1)
+        self.statusFrame.pack(side=tkinter.BOTTOM,fill=tkinter.X)
 
     def createMenubar(self):
-        mb = Tkinter.Menu()
+        mb = tkinter.Menu()
         self.createFileMenu(mb)
         self.createViewMenu(mb)
         self.createTestMenu(mb)
         self.master.config(menu=mb)
 
     def createFileMenu(self,parentMenu):
-        m = Tkinter.Menu(parentMenu, tearoff=0)
+        m = tkinter.Menu(parentMenu, tearoff=0)
         parentMenu.add_cascade(label="File", menu=m)
         m.add_command(label="Exit", command=self.onFileExit)
 
     def createViewMenu(self,parentMenu):
-        m = Tkinter.Menu(parentMenu, tearoff=0)
+        m = tkinter.Menu(parentMenu, tearoff=0)
         parentMenu.add_cascade(label="View", menu=m)
         m.add_command(
                 label="Find...", 
@@ -418,7 +416,7 @@ class DiffTool(Tkinter.Frame):
                 accelerator="F3")
 
     def createTestMenu(self,parentMenu):
-        m = Tkinter.Menu(parentMenu, tearoff=0)
+        m = tkinter.Menu(parentMenu, tearoff=0)
         parentMenu.add_cascade(label="Test", menu=m)
         m.add_command(label="Dump", command=self.onTestDump)
         m.add_command(label="Test", command=self.onTestTest)
@@ -427,38 +425,38 @@ class DiffTool(Tkinter.Frame):
         self.statusLabel["text"]=s
 
     def createToolbar(self):
-        self.buttonFrame=Tkinter.Frame(self.master)
+        self.buttonFrame=tkinter.Frame(self.master)
 
-        l=Tkinter.Label(self.buttonFrame,text="Changed",background="lightblue");
-        l.pack(side=Tkinter.RIGHT,padx=2,pady=2)
-        l=Tkinter.Label(self.buttonFrame,text="Deleted",background="lightgreen");
-        l.pack(side=Tkinter.RIGHT,padx=2,pady=2)
-        l=Tkinter.Label(self.buttonFrame,text="Added",background="pink");
-        l.pack(side=Tkinter.RIGHT,padx=2,pady=2)
+        l=tkinter.Label(self.buttonFrame,text="Changed",background="lightblue");
+        l.pack(side=tkinter.RIGHT,padx=2,pady=2)
+        l=tkinter.Label(self.buttonFrame,text="Deleted",background="lightgreen");
+        l.pack(side=tkinter.RIGHT,padx=2,pady=2)
+        l=tkinter.Label(self.buttonFrame,text="Added",background="pink");
+        l.pack(side=tkinter.RIGHT,padx=2,pady=2)
 
-        self.buttonFirstDiff=Tkinter.Button(self.buttonFrame,text="<<",width=2,
-                state=Tkinter.DISABLED,
+        self.buttonFirstDiff=tkinter.Button(self.buttonFrame,text="<<",width=2,
+                state=tkinter.DISABLED,
                 command=self.navigateToFirstDiff)
-        self.buttonFirstDiff.pack(side=Tkinter.LEFT,padx=2,pady=2)
-        self.buttonPreviousDiff=Tkinter.Button(self.buttonFrame,text="<",
-                state=Tkinter.DISABLED,
+        self.buttonFirstDiff.pack(side=tkinter.LEFT,padx=2,pady=2)
+        self.buttonPreviousDiff=tkinter.Button(self.buttonFrame,text="<",
+                state=tkinter.DISABLED,
                 command=self.navigateToPreviousDiff)
-        self.buttonPreviousDiff.pack(side=Tkinter.LEFT,padx=2,pady=2)
-        self.buttonNextDiff=Tkinter.Button(self.buttonFrame,text=">",
-                state=Tkinter.DISABLED,
+        self.buttonPreviousDiff.pack(side=tkinter.LEFT,padx=2,pady=2)
+        self.buttonNextDiff=tkinter.Button(self.buttonFrame,text=">",
+                state=tkinter.DISABLED,
                 command=self.navigateToNextDiff)
-        self.buttonNextDiff.pack(side=Tkinter.LEFT,padx=2,pady=2)
-        self.buttonLastDiff=Tkinter.Button(self.buttonFrame,text=">>",
-                state=Tkinter.DISABLED,
+        self.buttonNextDiff.pack(side=tkinter.LEFT,padx=2,pady=2)
+        self.buttonLastDiff=tkinter.Button(self.buttonFrame,text=">>",
+                state=tkinter.DISABLED,
                 command=self.navigateToLastDiff)
-        self.buttonLastDiff.pack(side=Tkinter.LEFT,padx=2,pady=2)
+        self.buttonLastDiff.pack(side=tkinter.LEFT,padx=2,pady=2)
 
-        self.buttonNextRedGreenDiff=Tkinter.Button(self.buttonFrame,text="Next Red/Green",
-                state=Tkinter.NORMAL,
+        self.buttonNextRedGreenDiff=tkinter.Button(self.buttonFrame,text="Next Red/Green",
+                state=tkinter.NORMAL,
                 command=self.navigateToNextRedGreenDiff)
-        self.buttonNextRedGreenDiff.pack(side=Tkinter.RIGHT,padx=2,pady=2)
+        self.buttonNextRedGreenDiff.pack(side=tkinter.RIGHT,padx=2,pady=2)
 
-        self.buttonFrame.pack(side=Tkinter.TOP,fill=Tkinter.X)
+        self.buttonFrame.pack(side=tkinter.TOP,fill=tkinter.X)
   
     def navigateToFirstDiff(self):
         self.buttonFirstDiff.focus()
@@ -510,21 +508,20 @@ class DiffTool(Tkinter.Frame):
 
     def navigateToIndex(self,direction=1):
         if self.navigationIndex is None:
-            self.buttonFirstDiff.config(state=Tkinter.DISABLED)
-            self.buttonPreviousDiff.config(state=Tkinter.DISABLED)
+            self.buttonFirstDiff.config(state=tkinter.DISABLED)
+            self.buttonPreviousDiff.config(state=tkinter.DISABLED)
             if len(self.navigationList)==0:
-                self.buttonLastDiff.config(state=Tkinter.DISABLED)
-                self.buttonNextDiff.config(state=Tkinter.DISABLED)
+                self.buttonLastDiff.config(state=tkinter.DISABLED)
+                self.buttonNextDiff.config(state=tkinter.DISABLED)
             else:
-                self.buttonLastDiff.config(state=Tkinter.NORMAL)
-                self.buttonNextDiff.config(state=Tkinter.NORMAL)
+                self.buttonLastDiff.config(state=tkinter.NORMAL)
+                self.buttonNextDiff.config(state=tkinter.NORMAL)
         else:
             a,b,colorTag=self.navigationList[self.navigationIndex]
- 
-            n=self.leftText.tag_names("%d.0" % a)
-            n=filter(lambda x: x != "sel" and x != "highlight",n)
-            if len(n)!=1:
-                print n
+            n = self.leftText.tag_names("%d.0" % a)
+            n = [x for x in n if x != "sel" and x != "highlight"]
+            if len(n) != 1:
+                print(n)
                 assert(len(n)==1)
             t="dark"+n[0]
             if t == "darkbluediffchar":
@@ -533,8 +530,8 @@ class DiffTool(Tkinter.Frame):
             self.leftText.tag_config("highlight",background=t,foreground="white")
             self.rightText.tag_config("highlight",background=t,foreground="white")
 
-            self.leftText.tag_remove("highlight",1.0,Tkinter.END)
-            self.rightText.tag_remove("highlight",1.0,Tkinter.END)
+            self.leftText.tag_remove("highlight",1.0,tkinter.END)
+            self.rightText.tag_remove("highlight",1.0,tkinter.END)
         
             self.leftText.tag_add("highlight","%d.0" % a,"%d.0" % b)
             self.rightText.tag_add("highlight","%d.0" % a,"%d.0" % b)
@@ -566,18 +563,18 @@ class DiffTool(Tkinter.Frame):
                 self.horizontalScrollbarUpdateInfo=10
 
             if self.navigationIndex==0:
-                self.buttonFirstDiff.config(state=Tkinter.DISABLED)
-                self.buttonPreviousDiff.config(state=Tkinter.DISABLED)
+                self.buttonFirstDiff.config(state=tkinter.DISABLED)
+                self.buttonPreviousDiff.config(state=tkinter.DISABLED)
             else:
-                self.buttonFirstDiff.config(state=Tkinter.NORMAL)
-                self.buttonPreviousDiff.config(state=Tkinter.NORMAL)
+                self.buttonFirstDiff.config(state=tkinter.NORMAL)
+                self.buttonPreviousDiff.config(state=tkinter.NORMAL)
 
             if self.navigationIndex>=len(self.navigationList)-1:
-                self.buttonLastDiff.config(state=Tkinter.DISABLED)
-                self.buttonNextDiff.config(state=Tkinter.DISABLED)
+                self.buttonLastDiff.config(state=tkinter.DISABLED)
+                self.buttonNextDiff.config(state=tkinter.DISABLED)
             else:
-                self.buttonLastDiff.config(state=Tkinter.NORMAL)
-                self.buttonNextDiff.config(state=Tkinter.NORMAL)
+                self.buttonLastDiff.config(state=tkinter.NORMAL)
+                self.buttonNextDiff.config(state=tkinter.NORMAL)
 
     def onFileExit(self):
         self.quit()
@@ -593,10 +590,10 @@ class DiffTool(Tkinter.Frame):
         #     - current insertion cursor
         #     - begin (or end for backward search) of file
 
-        selectionRange = self.findTextWidget.tag_ranges(Tkinter.SEL)
+        selectionRange = self.findTextWidget.tag_ranges(tkinter.SEL)
         if len(selectionRange) == 0:
-            insertIndex = self.findTextWidget.index(Tkinter.INSERT)
-            if insertIndex != self.findTextWidget.index("%s-1c" % Tkinter.END):
+            insertIndex = self.findTextWidget.index(tkinter.INSERT)
+            if insertIndex != self.findTextWidget.index("%s-1c" % tkinter.END):
                 # insert-index available 
                 newFindIndex = insertIndex
             else:
@@ -604,7 +601,7 @@ class DiffTool(Tkinter.Frame):
                 if self.findDirection == 1: # forward search
                     newFindIndex = "1.0"
                 else:  # backward search
-                    newFindIndex = self.findTextWidget.index(Tkinter.END) 
+                    newFindIndex = self.findTextWidget.index(tkinter.END) 
         else:
             if self.findDirection == 1: 
                 # forward search
@@ -617,7 +614,7 @@ class DiffTool(Tkinter.Frame):
 
         if self.findDirection == 1: 
             # forward search
-            findData = self.findTextWidget.get(newFindIndex,Tkinter.END)
+            findData = self.findTextWidget.get(newFindIndex,tkinter.END)
         else:  
             # backward search
             findData = self.findTextWidget.get("1.0",newFindIndexi)
@@ -637,14 +634,14 @@ class DiffTool(Tkinter.Frame):
                 newFindIndex = self.findTextWidget.index("%s+%dc" % ("1.0", distance))
             beginSelectionIndex = newFindIndex
             endSelectionIndex = self.findTextWidget.index("%s+%sc" % (newFindIndex, len(actualFindString))) 
-            self.leftText.tag_remove(Tkinter.SEL, 1.0, Tkinter.END)
-            self.rightText.tag_remove(Tkinter.SEL, 1.0, Tkinter.END)
+            self.leftText.tag_remove(tkinter.SEL, 1.0, tkinter.END)
+            self.rightText.tag_remove(tkinter.SEL, 1.0, tkinter.END)
        
             # The widget must have focus (on Windows platform),
             # otherwise tag SEL is ignored.
             self.findTextWidget.focus() 
-            self.findTextWidget.tag_add(Tkinter.SEL,beginSelectionIndex,endSelectionIndex)
-            self.findTextWidget.mark_set(Tkinter.INSERT,endSelectionIndex)
+            self.findTextWidget.tag_add(tkinter.SEL,beginSelectionIndex,endSelectionIndex)
+            self.findTextWidget.mark_set(tkinter.INSERT,endSelectionIndex)
 
             if (self.findTextWidget.bbox(beginSelectionIndex) is None or 
                     self.findTextWidget.bbox(endSelectionIndex) is None):
@@ -697,15 +694,15 @@ class DiffTool(Tkinter.Frame):
             self.findAction()
 
     def createPopupMenus(self):
-        self.standardEditor=string.strip(os.environ.get("EDITOR",""))
-        self.leftPopupMenu = Tkinter.Menu(tearoff=0)
-        self.rightPopupMenu = Tkinter.Menu(tearoff=0)
+        self.standardEditor = os.environ.get("EDITOR","").strip()
+        self.leftPopupMenu = tkinter.Menu(tearoff=0)
+        self.rightPopupMenu = tkinter.Menu(tearoff=0)
         if self.standardEditor != "":
             self.leftPopupMenu.add_command(
-                    label="Edit ("+self.standardEditor+") left file", 
+                    label="Edit (" + self.standardEditor+") left file", 
                     command=self.editLeftFile)
             self.rightPopupMenu.add_command(
-                    label="Edit ("+self.standardEditor+") right file", 
+                    label="Edit (" + self.standardEditor + ") right file", 
                     command=self.editRightFile)
         if os.name == "nt":
             self.leftPopupMenu.add_command(label="Notepad",command=self.notepadLeftFile)
@@ -746,7 +743,7 @@ class DiffTool(Tkinter.Frame):
         #    print string.join(lines,"")
         rc = os.system(cmd)
         if rc is not None and rc != 0:
-            print "\""+cmd+"\" returned "+str(rc)
+            print("\""+cmd+"\" returned "+str(rc))
 
     def neditLeftFile(self):
         self.startEditor("nedit",self.fileName1)
@@ -790,7 +787,7 @@ class DiffTool(Tkinter.Frame):
     def onTestTest(self):
         MessageDialog(self.master, "Not implemented", "onTestTest not implemented")
         #self.leftText.focus()
-        #self.leftText.tag_add(Tkinter.SEL,"1.0","1.5")
+        #self.leftText.tag_add(tkinter.SEL,"1.0","1.5")
 
     def filterKey(self,ev):
         # filter all keys which might modify the text
@@ -851,9 +848,9 @@ if __name__ == "__main__":
        usage("Two file names expected.")
 
    try: 
-       tk=Tkinter.Tk()
-   except Tkinter.TclError,ex:
-       print ex
+       tk=tkinter.Tk()
+   except tkinter.TclError as ex:
+       print(ex)
        sys.exit(2)
 
    tk.title("xdiff")
@@ -862,7 +859,7 @@ if __name__ == "__main__":
    tool.diffRecords=[]
 
    try:
-       tool.leftLabel.insert(Tkinter.END,fileName1)
+       tool.leftLabel.insert(tkinter.END,fileName1)
        tool.fileName1 = fileName1
 
        leftData=[]
@@ -873,7 +870,7 @@ if __name__ == "__main__":
            line=leftStream.readline()
        leftStream.close()
 
-       tool.rightLabel.insert(Tkinter.END,fileName2)
+       tool.rightLabel.insert(tkinter.END,fileName2)
        tool.fileName2 = fileName2
 
        rightData=[]
@@ -888,35 +885,34 @@ if __name__ == "__main__":
            diffCommand = "diff"
        else: 
            diffCommand = "/usr/bin/diff"
-        
 
        if ignoreBlankFlagString != "":
            diffCommand = diffCommand + " " + ignoreBlankFlagString
 
        diffCommand = diffCommand + " " + fileName1 + " " + fileName2
 
-       # print diffCommand
+       #print(diffCommand)
        diffStream=os.popen(diffCommand)
        diffLine=diffStream.readline()
        while diffLine != "":
-           diffLine=string.rstrip(diffLine)
-           if (len(diffLine)>=1 and
+           diffLine = diffLine.rstrip()
+           if (len(diffLine) >= 1 and
                diffLine[0] != ">" and
                diffLine[0] != "<" and
                diffLine != "---"):
-               #print diffLine
+               #print(diffLine)
                for x in ["a","c","d"]:
-                   fields=string.split(diffLine,x)
-                   assert(len(fields)==1 or len(fields)==2)
-                   if len(fields)==2:
-                       leftfields=string.split(fields[0],",")
-                       assert(len(leftfields)<=2)
-                       a1=int(leftfields[0])
-                       if len(leftfields)==1:
-                           a2=a1
+                   fields = diffLine.split(x)
+                   assert(len(fields) == 1 or len(fields) == 2)
+                   if len(fields) == 2:
+                       leftfields = fields[0].split(",")
+                       assert(len(leftfields) <= 2)
+                       a1 = int(leftfields[0])
+                       if len(leftfields) == 1:
+                           a2 = a1
                        else:
-                           a2=int(leftfields[1])
-                       rightfields=string.split(fields[1],",")
+                           a2 = int(leftfields[1])
+                       rightfields=fields[1].split(",")
                        assert(len(rightfields)<=2)
                        b1=int(rightfields[0])
                        if len(rightfields)==1:
@@ -931,15 +927,15 @@ if __name__ == "__main__":
 
        if len(tool.diffRecords)==0: 
            msg="No differences found."
-           print msg
+           print(msg)
            tool.setStatus(msg)
        elif len(tool.diffRecords)==1:
            msg=str(len(tool.diffRecords))+" difference found."
-           print msg
+           print(msg)
            tool.setStatus(msg)
        else:
            msg=str(len(tool.diffRecords))+" differences found."
-           print msg
+           print(msg)
            tool.setStatus(msg)
 
        tool.diffRecords.reverse()
@@ -1041,9 +1037,9 @@ if __name__ == "__main__":
        tool.leftText.tag_config("bluediffchar",
                background="red",
                foreground="white",
-               relief=Tkinter.GROOVE)
-       tool.leftText.tag_raise(Tkinter.SEL)  # SEL overrides all other tags
-       tool.leftText.tag_config(Tkinter.SEL,background="black",foreground="white")
+               relief=tkinter.GROOVE)
+       tool.leftText.tag_raise(tkinter.SEL)  # SEL overrides all other tags
+       tool.leftText.tag_config(tkinter.SEL,background="black",foreground="white")
 
        tool.rightText.tag_config("red",background="pink")
        tool.rightText.tag_config("green",background="lightgreen")
@@ -1053,9 +1049,9 @@ if __name__ == "__main__":
        tool.rightText.tag_config("bluediffchar",
                background="red",
                foreground="white",
-               relief=Tkinter.GROOVE)
-       tool.rightText.tag_raise(Tkinter.SEL)  # SEL overrides all other tags
-       tool.rightText.tag_config(Tkinter.SEL,background="black",foreground="white")
+               relief=tkinter.GROOVE)
+       tool.rightText.tag_raise(tkinter.SEL)  # SEL overrides all other tags
+       tool.rightText.tag_config(tkinter.SEL,background="black",foreground="white")
 
        assert(len(leftData)==tool.totalLines)
        assert(len(rightData)==tool.totalLines)
@@ -1072,19 +1068,19 @@ if __name__ == "__main__":
                # xdleft points now to the first different character of the line
                # ydleft points to first different character from the end
 
-               tool.leftText.insert(Tkinter.END,leftLine[:xdleft],"blue")
-               tool.leftText.insert(Tkinter.END,leftLine[xdleft:len(leftLine)-ydleft],"bluediffchar")
-               tool.leftText.insert(Tkinter.END,leftLine[len(leftLine)-ydleft:],"blue")
-               tool.rightText.insert(Tkinter.END,rightLine[:xdright],"blue")
-               tool.rightText.insert(Tkinter.END,rightLine[xdright:len(rightLine)-ydright],"bluediffchar")
-               tool.rightText.insert(Tkinter.END,rightLine[len(rightLine)-ydright:],"blue")
+               tool.leftText.insert(tkinter.END,leftLine[:xdleft],"blue")
+               tool.leftText.insert(tkinter.END,leftLine[xdleft:len(leftLine)-ydleft],"bluediffchar")
+               tool.leftText.insert(tkinter.END,leftLine[len(leftLine)-ydleft:],"blue")
+               tool.rightText.insert(tkinter.END,rightLine[:xdright],"blue")
+               tool.rightText.insert(tkinter.END,rightLine[xdright:len(rightLine)-ydright],"bluediffchar")
+               tool.rightText.insert(tkinter.END,rightLine[len(rightLine)-ydright:],"blue")
            else:
-               tool.leftText.insert(Tkinter.END,leftLine,leftTag)
-               tool.rightText.insert(Tkinter.END,rightLine,rightTag)
+               tool.leftText.insert(tkinter.END,leftLine,leftTag)
+               tool.rightText.insert(tkinter.END,rightLine,rightTag)
            lineNumber=lineNumber+1
 
        tool.navigateToIndex()
-   except IOError, ex:
+   except IOError as ex:
        exstr = str(ex)
        sys.stderr.write(exstr+"\n")
        MessageDialog(tool, "xdiff IO Error", exstr)
