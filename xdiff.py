@@ -618,7 +618,7 @@ class DiffTool(tkinter.Frame):
             findData = self.findTextWidget.get(newFindIndex,tkinter.END)
         else:  
             # backward search
-            findData = self.findTextWidget.get("1.0",newFindIndexi)
+            findData = self.findTextWidget.get("1.0",newFindIndex)
 
         if self.findIgnoreCase:
             findData = findData.upper()
@@ -732,16 +732,6 @@ class DiffTool(tkinter.Frame):
 
     def startEditor(self,editor,file):
         cmd = editor + " " + file + " &"
-        #f=os.popen(cmd)
-        #line=f.readline()
-        #lines=[]
-        #while line != "":
-        #    lines.append(line) 
-        #    line=f.readline()
-        #rc=f.close()
-        #if rc is not None:
-        #    print "\""+cmd+"\" returned "+str(rc)
-        #    print string.join(lines,"")
         rc = os.system(cmd)
         if rc is not None and rc != 0:
             print("\""+cmd+"\" returned "+str(rc))
@@ -791,7 +781,7 @@ class DiffTool(tkinter.Frame):
         #self.leftText.tag_add(tkinter.SEL,"1.0","1.5")
 
     def filterKey(self,ev):
-        # filter all keys which might modify the text
+        # Filter all keys which might modify the text.
 
         #print "sym=<"+ev.keysym+">, code=<"+str(ev.keycode)+">, chr=<"+ev.char+">, state= <"+str(ev.state)+">"
 
@@ -806,7 +796,7 @@ class DiffTool(tkinter.Frame):
             return
         
         # The event ev is considered as representing a key, 
-        # which would modify the text, which is not desired.
+        # which would modify the text, which is not what is wanted.
         return "break"
 
 def usage(msg=None):
@@ -849,52 +839,47 @@ if __name__ == "__main__":
        usage("Two file names expected.")
 
    try: 
-       tk=tkinter.Tk()
+       tk = tkinter.Tk()
    except tkinter.TclError as ex:
        print(ex)
        sys.exit(2)
 
    tk.title("xdiff")
 
-   tool=DiffTool(tk)
+   tool = DiffTool(tk)
    tool.diffRecords=[]
 
    try:
        tool.leftLabel.insert(tkinter.END,fileName1)
        tool.fileName1 = fileName1
 
-       leftData=[]
-       leftStream=open(fileName1)
+       leftData = []
+       leftStream = open(fileName1)
        line=leftStream.readline()
        while line != "":
-           leftData.append([line,None])
+           leftData.append([line, None])
            line=leftStream.readline()
        leftStream.close()
 
-       tool.rightLabel.insert(tkinter.END,fileName2)
+       tool.rightLabel.insert(tkinter.END, fileName2)
        tool.fileName2 = fileName2
 
        rightData=[]
        rightStream=open(fileName2)
        line=rightStream.readline()
        while line != "":
-           rightData.append([line,None])
+           rightData.append([line, None])
            line=rightStream.readline()
        rightStream.close()
 
-       if os.name == "nt":
-           diffCommand = "diff"
-       else: 
-           diffCommand = "/usr/bin/diff"
-
+       diffCommand = "diff"
        if ignoreBlankFlagString != "":
            diffCommand = diffCommand + " " + ignoreBlankFlagString
-
        diffCommand = diffCommand + " " + fileName1 + " " + fileName2
 
        #print(diffCommand)
-       diffStream=os.popen(diffCommand)
-       diffLine=diffStream.readline()
+       diffStream = os.popen(diffCommand)
+       diffLine = diffStream.readline()
        while diffLine != "":
            diffLine = diffLine.rstrip()
            if (len(diffLine) >= 1 and
@@ -902,7 +887,7 @@ if __name__ == "__main__":
                diffLine[0] != "<" and
                diffLine != "---"):
                #print(diffLine)
-               for x in ["a","c","d"]:
+               for x in ["a", "c", "d"]:
                    fields = diffLine.split(x)
                    assert(len(fields) == 1 or len(fields) == 2)
                    if len(fields) == 2:
@@ -913,40 +898,40 @@ if __name__ == "__main__":
                            a2 = a1
                        else:
                            a2 = int(leftfields[1])
-                       rightfields=fields[1].split(",")
-                       assert(len(rightfields)<=2)
-                       b1=int(rightfields[0])
-                       if len(rightfields)==1:
-                           b2=b1
+                       rightfields = fields[1].split(",")
+                       assert(len(rightfields) <= 2)
+                       b1 = int(rightfields[0])
+                       if len(rightfields) == 1:
+                           b2 = b1
                        else:
-                           b2=int(rightfields[1])
+                           b2 = int(rightfields[1])
                        tool.diffRecords.append((x,a1,a2,b1,b2))
-           diffLine=diffStream.readline()
+           diffLine = diffStream.readline()
        diffStream.close()
 
        # print "diffRecords:", tool.diffRecords
 
-       if len(tool.diffRecords)==0: 
-           msg="No differences found."
+       if len(tool.diffRecords) == 0: 
+           msg = "No differences found."
            print(msg)
            tool.setStatus(msg)
-       elif len(tool.diffRecords)==1:
-           msg=str(len(tool.diffRecords))+" difference found."
+       elif len(tool.diffRecords) == 1:
+           msg = str(len(tool.diffRecords)) + " difference found."
            print(msg)
            tool.setStatus(msg)
        else:
-           msg=str(len(tool.diffRecords))+" differences found."
+           msg = str(len(tool.diffRecords)) + " differences found."
            print(msg)
            tool.setStatus(msg)
 
        tool.diffRecords.reverse()
 
        # first traversal, (do not modify the tool.diffRecords)
-       for t,a1,a2,b1,b2 in tool.diffRecords:
-           if t=="a":
+       for t, a1, a2, b1, b2 in tool.diffRecords:
+           if t == "a":
                # something that only exists on the right side
-               assert(a1==a2)
-               assert(b1<=b2)
+               assert(a1 == a2)
+               assert(b1 <= b2)
                i=b1
                while i<=b2:
                    rightData[i-1][1]="red" 
