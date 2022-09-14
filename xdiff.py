@@ -878,36 +878,33 @@ if __name__ == "__main__":
        diffCommand = diffCommand + " " + fileName1 + " " + fileName2
 
        #print(diffCommand)
-       diffStream = os.popen(diffCommand)
-       diffLine = diffStream.readline()
-       while diffLine != "":
-           diffLine = diffLine.rstrip()
-           if (len(diffLine) >= 1 and
-               diffLine[0] != ">" and
-               diffLine[0] != "<" and
-               diffLine != "---"):
-               #print(diffLine)
-               for x in ["a", "c", "d"]:
-                   fields = diffLine.split(x)
-                   assert(len(fields) == 1 or len(fields) == 2)
-                   if len(fields) == 2:
-                       leftfields = fields[0].split(",")
-                       assert(len(leftfields) <= 2)
-                       a1 = int(leftfields[0])
-                       if len(leftfields) == 1:
-                           a2 = a1
-                       else:
-                           a2 = int(leftfields[1])
-                       rightfields = fields[1].split(",")
-                       assert(len(rightfields) <= 2)
-                       b1 = int(rightfields[0])
-                       if len(rightfields) == 1:
-                           b2 = b1
-                       else:
-                           b2 = int(rightfields[1])
-                       tool.diffRecords.append((x,a1,a2,b1,b2))
-           diffLine = diffStream.readline()
-       diffStream.close()
+       with os.popen(diffCommand) as stream:
+           for diffLine in stream:
+               diffLine = diffLine.rstrip()
+               if (len(diffLine) >= 1 and
+                   diffLine[0] != ">" and
+                   diffLine[0] != "<" and
+                   diffLine != "---"):
+                   #print(diffLine)
+                   for x in ["a", "c", "d"]:
+                       fields = diffLine.split(x)
+                       assert(len(fields) == 1 or len(fields) == 2)
+                       if len(fields) == 2:
+                           leftfields = fields[0].split(",")
+                           assert(len(leftfields) <= 2)
+                           a1 = int(leftfields[0])
+                           if len(leftfields) == 1:
+                               a2 = a1
+                           else:
+                               a2 = int(leftfields[1])
+                           rightfields = fields[1].split(",")
+                           assert(len(rightfields) <= 2)
+                           b1 = int(rightfields[0])
+                           if len(rightfields) == 1:
+                               b2 = b1
+                           else:
+                               b2 = int(rightfields[1])
+                           tool.diffRecords.append((x,a1,a2,b1,b2))
 
        # print "diffRecords:", tool.diffRecords
 

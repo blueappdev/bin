@@ -34,14 +34,13 @@ class Tool():
             self.processFilename(filename)
 
     def processFilename(self, filename):
-        stream = open(filename)
-        lineNumber = 1
-        for line in stream:
-            if self.lineNumberFlag:
-                print(str(lineNumber).rjust(6, " "), end = "  ")
-            print(line, end = "")
-            lineNumber += 1
-        stream.close()
+        with open(filename) as stream:
+            lineNumber = 1
+            for line in stream:
+                if self.lineNumberFlag:
+                    print(str(lineNumber).rjust(6, " "), end = "  ")
+                print(line, end = "")
+                lineNumber += 1
 
 
 if __name__ == "__main__":
