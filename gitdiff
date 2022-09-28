@@ -1,3 +1,0 @@
-#!/bin/ksh
-
-git difftool --no-prompt --extcmd=$(dirname $0)/xdiff.py -b $*
