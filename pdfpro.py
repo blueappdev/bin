@@ -2,14 +2,14 @@
 #
 # pdfpro.py
 #
-# Improve scanned images in pdf files
+# Convert scanned page images in pdf files to black and white
 #
 
 import sys, getopt, io, os.path
-import fitz
-import PIL.Image
+import fitz         # fitz is pymudpf
+import PIL.Image    # PIL is pillow
 
-class PdfProcessor:
+class PDFImageProcessor:
     def __init__(self):
         self.outputFilename = None
 
@@ -39,7 +39,7 @@ class PdfProcessor:
 
     def usage(self):
         print('Usage: pdfpro [-h] [-o output_file] FILE')
-        print('Improve scanned images in pdf files')
+        print('Convert scanned page images in pdf files to black and white')
         print('Example: pdfpro my_file.pdf')
         print('  -o  output pdf file')
         print('  -h  help')
@@ -83,7 +83,7 @@ class PdfProcessor:
         return image
 
 try:
-    PdfProcessor().processArguments(sys.argv[1:])
+    PDFImageProcessor().processArguments(sys.argv[1:])
 except KeyboardInterrupt:
     print('Interrupted.')
     
